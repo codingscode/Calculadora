@@ -5,8 +5,19 @@ import './Calculadora.css'
 import Botao from '../componentes/Botao'
 import Display from '../componentes/Display'
 
+const estadoInicial = {
+  displayValue: '0',
+  limparDisplay: false,
+  operation: null,
+  valores: [0,0],
+  atual: 0
+}
+
 
 export default class Calculadora extends Component {
+
+    state = {...estadoInicial}
+
     constructor(props) {
         super(props)
         this.limparMemoria = this.limparMemoria.bind(this)
@@ -15,7 +26,7 @@ export default class Calculadora extends Component {
     }
     
     limparMemoria() {
-      console.log('limpar')
+      this.setState({...estadoInicial})
     }
       
     setOperation(operation) {
@@ -23,7 +34,24 @@ export default class Calculadora extends Component {
     }
       
     adicionarDigit(n) {
-      console.log(n)
+      if (n === '.' && this.state.displayValue.includes('.')) {
+        return
+      }
+      
+      const limparDisplay = this.state.displayValue === '0' || this.state.limparDisplay
+      const valorAtual = limparDisplay ? '' : this.state.displayValue
+      const displayValue = valorAtual + n
+      this.setState({displayValue, limparDisplay: false})
+
+      if (n !== '.') {
+        const i = this.state.atual
+        const novoValor = parseFloat(displayValue)
+        const valores = [...this.state.valores]
+        valores[i] = novoValor
+        this.setState({valores})
+        console.log(valores)
+      }
+      
     }
 
 
@@ -31,7 +59,7 @@ export default class Calculadora extends Component {
         
         return (
             <div className="calculadora">
-              <Display value={100}/>
+              <Display value={this.state.displayValue}/>
               <Botao label="AC" click={this.limparMemoria} triple/>
               <Botao label="/" click={this.setOperation} operation/>
               <Botao label="7" click={this.adicionarDigit}/>
