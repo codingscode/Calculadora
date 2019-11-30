@@ -30,7 +30,34 @@ export default class Calculadora extends Component {
     }
       
     setOperation(operation) {
-      console.log(operation)
+      if (this.state.atual === 0) {
+        this.setState({operation, atual: 1, limparDisplay: true})
+      } else {
+        const igual = operation === '='
+        const operacaoAtual = this.state.operation
+
+        const valores = [...this.state.valores]
+
+        try {
+          valores[0] = eval(`${valores[0]} ${operacaoAtual} ${valores[1]}`)
+        } catch(e) {
+          valores[0] = this.state.valores[0]
+        }
+
+
+        
+        valores[1] = 0
+
+        this.setState({
+          displayValue: valores[0], 
+          operation: igual ? null : operation,
+          atual: igual ? 0 : 1,
+          limparDisplay: !igual,
+          valores
+        })
+
+      }
+      
     }
       
     adicionarDigit(n) {
